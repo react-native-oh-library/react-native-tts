@@ -1,11 +1,11 @@
 {
-  "name": "react-native-tts",
-  "version": "4.1.1",
+  "name": "@react-native-oh-tpl/react-native-tts",
+  "version": "4.1.1-0.0.1",
   "description": "React Native Text-To-Speech module for Android and iOS",
-  "main": "index.js",
+  "main": "index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ak1394/react-native-tts.git"
+    "url": "git://github.com/react-native-oh-library/react-native-tts.git" 
   },
   "keywords": [
     "tts",
@@ -15,12 +15,31 @@
     "react",
     "react-native",
     "android",
-    "ios"
+    "ios",
+    "harmony"
   ],
+  "harmony": {
+    "alias": "react-native-tts",
+   "codegenConfig": {
+      "specPaths": [
+        "./src"
+      ]
+    }
+  }, 
+  "dependencies": {
+    "react-native-tts": "4.1.0"
+  }, 
   "author": "Anton Krasovsky",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ak1394/react-native-tts/issues"
   },
-  "homepage": "https://github.com/ak1394/react-native-tts#readme"
+  "homepage": "https://github.com/ak1394/react-native-tts#readme",
+  "types": "./index.d.ts",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
