@@ -13,6 +13,7 @@ React Native TTS is a text-to-speech library for [React Native](https://facebook
 
 ```shell
 npm install --save react-native-tts
+react-native link react-native-tts
 ```
 
 ## Usage
@@ -192,7 +193,6 @@ Subscribe to TTS events
 
 ```js
 Tts.addEventListener('tts-start', (event) => console.log("start", event));
-Tts.addEventListener('tts-progress', (event) => console.log("progress", event));
 Tts.addEventListener('tts-finish', (event) => console.log("finish", event));
 Tts.addEventListener('tts-cancel', (event) => console.log("cancel", event));
 ```
