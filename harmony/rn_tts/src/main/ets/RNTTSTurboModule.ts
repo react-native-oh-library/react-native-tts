@@ -31,7 +31,11 @@ type EventCallback = (id: string) => void;
 
 export class RNTTSTurboModule extends TurboModule implements TM.TTSNativeModule.Spec {
 
-  private TextToSpeechManager = new TextToSpeechManager();
+  constructor(ctx) {
+    super(ctx)
+  }
+
+  private TextToSpeechManager = new TextToSpeechManager(this.ctx);
 
   public getInitStatus(): Promise<string> {
     return this.TextToSpeechManager.getInitStatus();
@@ -49,7 +53,7 @@ export class RNTTSTurboModule extends TurboModule implements TM.TTSNativeModule.
     return this.TextToSpeechManager.voices();
   }
 
-  public speak(utterance: string, params?: {}): Promise<string> {
+  public speak(utterance: string, params?: {}): string | number {
     return this.TextToSpeechManager.speak(utterance, params);
   }
 

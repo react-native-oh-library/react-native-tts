@@ -23,6 +23,7 @@
  */
 
 import audio from '@ohos.multimedia.audio';
+import { RNOHContext, RNOHLogger } from '@rnoh/react-native-openharmony/ts';
 
 type DataItem = {buffer: ArrayBuffer, index: number};
 type Callback = () => void;
@@ -30,12 +31,14 @@ type Callback = () => void;
 
 export class AudioPlayer {
   private TAG: string = 'AudioPlayer';
+  private context: RNOHContext | undefined = undefined;
   private audioRenderer: audio.AudioRenderer;
   private bufferQueue: DataItem[] = [];
   private isWriting: boolean = false;
   public writeId: string = '';
 
-  constructor() {
+  constructor(ctx: RNOHContext) {
+    this.context = ctx;
     this.getAudioRenderer();
   }
 
@@ -81,7 +84,7 @@ export class AudioPlayer {
     return new Promise((resolve, reject) => {
       audio.createAudioRenderer(audioRendererOptions,(err, data) => {
         if (err) {
-          reject();
+          reject(JSON.stringify(err));
           throw new Error(JSON.stringify(err));
         } else {
           this.audioRenderer = data;
@@ -139,6 +142,7 @@ export class AudioPlayer {
     this.isWriting = false;
     if(!this.bufferQueue.length){
       this.stop();
+      callback();
       return;
     }
   }
@@ -173,11 +177,12 @@ export class AudioPlayer {
   public start(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       try {
+        this.audioRenderer.flush();
         this.audioRenderer.start().then(() => {
           resolve(true);
-        }).catch(() => reject(false));
+        }).catch((e) => reject(JSON.stringify(e)));
       } catch (e) {
-        reject(false);
+        reject(JSON.stringify(e));
         throw new Error(JSON.stringify(e));
       }
     })
@@ -188,13 +193,13 @@ export class AudioPlayer {
       try {
         if(this.isRunning){
           this.audioRenderer.stop().then(() => {
+            this.emitEvent('tts-cancel');
+            this.audioRenderer.flush();
             resolve(true);
-          }).catch(() => reject(false));
-        }else{
-          reject(false);
+          }).catch((e) => reject(JSON.stringify(e)));
         }
       } catch (e) {
-        reject(false);
+        reject(JSON.stringify(e));
         throw new Error(JSON.stringify(e));
       }
     })
@@ -205,14 +210,13 @@ export class AudioPlayer {
     return new Promise((resolve, reject) => {
       try {
         if(this.isRunning && !this.isPause){
+          this.emitEvent('tts-pause');
           this.audioRenderer.pause();
           this.isWriting = false;
           resolve(true);
-        }else{
-          reject(false);
         }
       } catch (e) {
-        reject(false);
+        reject(JSON.stringify(e));
         throw new Error(JSON.stringify(e));
       }
     })
@@ -224,30 +228,13 @@ export class AudioPlayer {
       try {
         if(this.isPause && !this.isRunning){
           this.audioRenderer.start().then(() => {
+            this.emitEvent('tts-resume');
             this.processQueue(this.writeId);
             resolve(true);
-          }).catch(() => reject(false));
-        }else{
-          reject(false);
+          }).catch((e) => reject(JSON.stringify(e)));
         }
       } catch (e) {
-        reject(false);
-        throw new Error(JSON.stringify(e));
-      }
-    })
-  }
-
-  /*获取音频焦点*/
-  public setDucking(enabled: boolean): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      try {
-        this.audioRenderer.setInterruptMode(Number(enabled)).then(() => {
-          resolve(true);
-        }).catch(() => {
-          reject(false);
-        })
-      } catch (e) {
-        reject(false);
+        reject(JSON.stringify(e));
         throw new Error(JSON.stringify(e));
       }
     })
@@ -260,9 +247,13 @@ export class AudioPlayer {
         this.audioRenderer.flush();
         resolve(true);
       } catch (e) {
-        reject(false);
+        reject(JSON.stringify(e));
         throw new Error(JSON.stringify(e));
       }
     })
+  }
+
+  private emitEvent(name: string){
+    this.context.rnInstance.emitDeviceEvent(name, this.writeId);
   }
 }

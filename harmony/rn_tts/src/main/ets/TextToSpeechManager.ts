@@ -24,6 +24,7 @@
 
 import { textToSpeech } from '@kit.CoreSpeechKit';
 import { util } from '@kit.ArkTS';
+import { RNOHContext, RNOHLogger } from '@rnoh/react-native-openharmony/ts';
 import { TM } from '@rnoh/react-native-openharmony/generated/ts';
 import {AudioPlayer} from './AudioPlayer';
 
@@ -31,9 +32,10 @@ type EventCallback = (id: string) => void;
 
 
 export class TextToSpeechManager  {
+  private context: RNOHContext | undefined = undefined;
   private tts: textToSpeech.TextToSpeechEngine;
   private ready: boolean;
-  private eventListeners: { [key: string]: EventCallback[] } = {};
+  private processFlag: boolean;
 
   private audioPlayer: AudioPlayer;
 
@@ -47,9 +49,10 @@ export class TextToSpeechManager  {
     // "soundChannel": 1
   }
 
-  constructor() {
+  constructor(ctx: RNOHContext) {
+    this.context = ctx;
     this.initEngine();
-    this.audioPlayer = new AudioPlayer();
+    this.audioPlayer = new AudioPlayer(ctx);
   }
 
   /*创建tts实例*/
@@ -86,27 +89,33 @@ export class TextToSpeechManager  {
     return {
       // 开始播报回调
       onStart(requestId: string, response: textToSpeech.StartResponse) {
+        that.processFlag = false;
       },
       // 合成完成及播报完成回调
       onComplete(requestId: string, response: textToSpeech.CompleteResponse){
-        that.dispatchEvent('tts-start', requestId);
+        that.emitEvent('tts-start', requestId);
         that.audioPlayer.sortBufferQueue();
         that.audioPlayer.processQueue(requestId, () => {
-          that.audioPlayer.stop();
+          that.emitEvent('tts-finish', requestId);
         });
       },
       // 停止播报回调
-      onStop(requestId: string, response: textToSpeech.StopResponse) {
-      },
+      onStop(requestId: string, response: textToSpeech.StopResponse) {},
       // 返回音频流
       onData(requestId: string, audio: ArrayBuffer, response: textToSpeech.SynthesisResponse) {
         if(response.sequence > 0){
+          if(!that.processFlag){
+            that.emitEvent('tts-progress', requestId);
+            that.processFlag = true;
+          }
           that.audioPlayer.receiveData({buffer: audio, index: response.sequence}, requestId);
         }
       },
       // 错误回调
       onError(requestId: string, errorCode: number, errorMessage: string) {
-        that.dispatchEvent('tts-error', requestId);
+        that.emitEvent('tts-error', requestId);
+        that.audioPlayer.stop();
+        that.audioPlayer.flush();
       }
     }
   }
@@ -119,7 +128,7 @@ export class TextToSpeechManager  {
           this.initEngine().then(() => {
             resolve('Success');
           }).catch(err => {
-            reject(err);
+            reject(reject(JSON.stringify(err)));
           })
         } catch (exception) {
           reject(JSON.stringify(exception));
@@ -154,7 +163,7 @@ export class TextToSpeechManager  {
           resolve(rList);
         })
       } catch (e) {
-        reject(e);
+        reject(JSON.stringify(e));
       }
     })
   }
@@ -166,7 +175,7 @@ export class TextToSpeechManager  {
         this.speakParams.speed = rate;
         resolve('success');
       } catch (e) {
-        reject(e);
+        reject(JSON.stringify(e));
       }
     });
   }
@@ -178,7 +187,7 @@ export class TextToSpeechManager  {
         this.speakParams.pitch = pitch;
         resolve('success');
       } catch (e) {
-        reject(e);
+        reject(JSON.stringify(e));
       }
     });
   }
@@ -189,10 +198,8 @@ export class TextToSpeechManager  {
   }
 
   /*开始合成语音并播放*/
-  public speak(utterance: string, params: Record<string, string> = {}): Promise<string> {
-    return new Promise((resolve, reject) => {
+  public speak(utterance: string, params: Record<string, string> = {}): string | number {
       if (!this.ready) {
-        reject(new Error('TTS not ready'));
         return;
       }
 
@@ -206,13 +213,12 @@ export class TextToSpeechManager  {
           this.audioPlayer.start().then(() => {
             this.audioPlayer.clearCacheData().then(() => {
               this.tts.speak(utterance, speakParams);
-              resolve('Success');
             })
           })
       } catch (exception) {
-        reject(JSON.stringify(exception));
+        throw new Error(JSON.stringify(exception));
       }
-    });
+      return utteranceId;
   }
 
   /*暂停语音播放*/
@@ -225,31 +231,17 @@ export class TextToSpeechManager  {
     return this.audioPlayer.resume();
   }
 
-  /*获取音频焦点*/
-  public setDucking(enabled: boolean){
-    return this.audioPlayer.setDucking(enabled);
+  private emitEvent(name: string, id: string){
+    this.context.rnInstance.emitDeviceEvent(name, id);
   }
 
+  /*RN内置事件发射器调用所必需的*/
   public addEventListener(type: string, listener: EventCallback) {
-    if (!this.eventListeners[type]) {
-      this.eventListeners[type] = [];
-    }
-    this.eventListeners[type].push(listener);
+    // Keep: Required for RN built in Event Emitter Calls.
   }
 
+  /*RN内置事件发射器调用所必需的*/
   public removeEventListener(type: string, listener: EventCallback) {
-    const listeners = this.eventListeners[type];
-    if (listeners) {
-      this.eventListeners[type] = listeners.filter(l => l !== listener);
-    }
-  }
-
-  private dispatchEvent(type: string, id: string) {
-    const listeners = this.eventListeners[type];
-    if (listeners) {
-      listeners.forEach(listener => {
-        listener(id);
-      });
-    }
+    // Keep: Required for RN built in Event Emitter Calls.
   }
 }
