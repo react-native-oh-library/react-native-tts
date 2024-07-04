@@ -1,4 +1,4 @@
-import { NativeModules, TurboModuleRegistry, NativeEventEmitter, Platform } from 'react-native';
+import { NativeModules, TurboModuleRegistry, NativeEventEmitter, EmitterSubscription, Platform } from 'react-native';
 import type {Options, TtsEvents, TtsEventHandler} from './index.d'
 
 
@@ -6,9 +6,12 @@ const TextToSpeech = TurboModuleRegistry?TurboModuleRegistry.get('TTSNativeModul
 
 
 class Tts extends NativeEventEmitter {
+
+  private eventMap:Record<string, EmitterSubscription> = {};
+
   constructor() {
     super(TextToSpeech);
-  }
+  }  
 
   get isIWH(): boolean {
     return ['ios', 'windows', 'harmony'].includes(Platform.OS)
@@ -127,11 +130,17 @@ class Tts extends NativeEventEmitter {
   }
 
   addEventListener<T extends TtsEvents>(type: T, handler: TtsEventHandler<T>) {
-    return TextToSpeech.addEventListener(type, handler);
+    const fn = this.addListener(type, handler);
+    this.eventMap[type] = fn;
   }
 
-  removeEventListener<T extends TtsEvents>(type: T, handler: TtsEventHandler<T>) {
-    return TextToSpeech.removeListener(type, handler);
+  removeEventListener<T extends TtsEvents>(type: T, handler: (event: string) => void) {
+    const fn = this.eventMap[type];
+    if (fn) {
+        fn.remove();
+        delete this.eventMap[type];
+        handler(type);
+    }
   }
 }
 

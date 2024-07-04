@@ -5,7 +5,7 @@
   "main": "index",
   "repository": {
     "type": "git",
-    "url": "git://github.com/react-native-oh-library/react-native-tts.git" 
+    "url": "git://github.com/react-native-oh-library/react-native-tts.git"
   },
   "keywords": [
     "tts",
@@ -20,15 +20,15 @@
   ],
   "harmony": {
     "alias": "react-native-tts",
-   "codegenConfig": {
+    "codegenConfig": {
       "specPaths": [
         "./src"
       ]
     }
-  }, 
+  },
   "dependencies": {
     "react-native-tts": "4.1.0"
-  }, 
+  },
   "author": "Anton Krasovsky",
   "license": "MIT",
   "bugs": {
