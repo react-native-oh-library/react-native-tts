@@ -25,29 +25,34 @@
 import type { TurboModule } from 'react-native/Libraries/TurboModule/RCTExport';
 import { TurboModuleRegistry } from 'react-native';
 
-// type SimpleEvents = "tts-start" | "tts-finish" | "tts-error" | "tts-cancel";
-// type SimpleEvent = {
-//   utteranceId: string | number;
-// };
+type SimpleEvents = "tts-start" | "tts-finish" | "tts-error" | "tts-cancel" | "tts-pause" | "tts-resume";
+type SimpleEvent = {
+  utteranceId: string | number;
+};
 
-// type ProgressEventName = "tts-progress";
-// type ProgressEvent = {
-//   utteranceId: string | number;
-//   location: number;
-//   length: number;
-// };
+type ProgressEventName = "tts-progress";
+type ProgressEvent = {
+  utteranceId: string | number;
+  location: number;
+  length: number;
+};
 
-// export type TtsEvent<
-//   T extends TtsEvents = TtsEvents
-// > = T extends ProgressEventName ? ProgressEvent : SimpleEvent;
+export type TtsEvent = ProgressEvent | SimpleEvent;
 
-// export type TtsEventHandler<T extends TtsEvents = TtsEvents> = (
-//     event: TtsEvent<T>
-//   ) => any;
+export type TtsEventHandler = (
+    event: TtsEvent
+  ) => unknown;
 
-// export type TtsEvents = SimpleEvents | ProgressEventName;
+export type TtsEvents = SimpleEvents | ProgressEventName;
 
-type CallbackEvent = (id: string) => void;
+export type EventCallback = (event: string) => void;
+
+export type Engine = {
+  name: string;
+  label: string;
+  default: boolean;
+  icon: number;
+};
 
 export type Voice = {
   id: string;
@@ -60,22 +65,29 @@ export type Voice = {
 };
 
 export interface Spec extends TurboModule {
-    getInitStatus(): Promise<string>;
+    getInitStatus(): Promise<"success">;
+    requestInstallEngine(): Promise<"success">;
+    requestInstallData(): Promise<"success">;
+    setDucking(enabled: boolean): Promise<"success">;
+    setDefaultEngine(engineName: string): Promise<boolean>;
+    setDefaultVoice(voiceId: string): Promise<"success">;
     setDefaultRate(rate: number, skipTransform?: boolean): Promise<"success">;
     setDefaultPitch(pitch: number): Promise<"success">;
+    setDefaultLanguage(language: string): Promise<"success">;
+    setIgnoreSilentSwitch(ignoreSilentSwitch: boolean): Promise<boolean>;
     voices(): Promise<Voice[]>;
-    speak(utterance: string, params?: {}): Promise<string>;
+    engines(): Promise<Engine[]>;
+    speak(utterance: string, params?: {}): string | number;
     stop(onWordBoundary?: boolean):  Promise<boolean>;
-    setDucking(enabled: boolean): Promise<boolean>;
     pause(onWordBoundary?: boolean): Promise<boolean>;
     resume(): Promise<boolean>;
     addEventListener(
         type: string,
-        handler: CallbackEvent
+        handler: TtsEventHandler
       ):void;
     removeEventListener(
       type: string,
-      handler: CallbackEvent
+      handler: TtsEventHandler
     ):void;
 } 
  

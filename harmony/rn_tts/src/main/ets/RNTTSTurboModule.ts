@@ -26,7 +26,7 @@ import { TurboModule } from '@rnoh/react-native-openharmony/ts';
 import { TM } from '@rnoh/react-native-openharmony/generated/ts';
 import {TextToSpeechManager} from './TextToSpeechManager'
 
-type EventCallback = (id: string) => void;
+type EventCallback = (event: string) => void;
 
 
 export class RNTTSTurboModule extends TurboModule implements TM.TTSNativeModule.Spec {
@@ -37,8 +37,28 @@ export class RNTTSTurboModule extends TurboModule implements TM.TTSNativeModule.
 
   private TextToSpeechManager = new TextToSpeechManager(this.ctx);
 
-  public getInitStatus(): Promise<string> {
+  public getInitStatus(): Promise<"success"> {
     return this.TextToSpeechManager.getInitStatus();
+  }
+
+  public requestInstallEngine(): Promise<"success"> {
+    return Promise.resolve('success');
+  }
+
+  public requestInstallData(): Promise<"success"> {
+    return Promise.resolve('success');
+  }
+
+  public setDucking(enabled: boolean): Promise<"success"> {
+    return Promise.resolve('success');
+  }
+
+  public setDefaultEngine(engineName: string): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+
+  public setDefaultVoice(voiceId: string): Promise<"success"> {
+    return Promise.resolve('success');
   }
 
   public setDefaultRate(rate: number, skipTransform: boolean): Promise<string> {
@@ -49,8 +69,20 @@ export class RNTTSTurboModule extends TurboModule implements TM.TTSNativeModule.
     return this.TextToSpeechManager.setDefaultPitch(pitch);
   }
 
+  public setDefaultLanguage(language: string): Promise<"success"> {
+    return Promise.resolve('success');
+  }
+
+  public setIgnoreSilentSwitch(ignoreSilentSwitch: boolean): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+
   public voices(): Promise<TM.TTSNativeModule.Voice[]> {
     return this.TextToSpeechManager.voices();
+  }
+
+  public engines(): Promise<TM.TTSNativeModule.Engine[]> {
+    return Promise.resolve([]);
   }
 
   public speak(utterance: string, params?: {}): string | number {

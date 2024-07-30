@@ -14,8 +14,6 @@
     "text-to-speech",
     "react",
     "react-native",
-    "android",
-    "ios",
     "harmony"
   ],
   "harmony": {
@@ -27,7 +25,7 @@
     }
   },
   "dependencies": {
-    "react-native-tts": "4.1.0"
+    "react-native-tts": "4.1.1"
   },
   "author": "Anton Krasovsky",
   "license": "MIT",

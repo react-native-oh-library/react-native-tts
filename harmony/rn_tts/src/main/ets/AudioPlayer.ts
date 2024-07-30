@@ -23,7 +23,8 @@
  */
 
 import audio from '@ohos.multimedia.audio';
-import { RNOHContext, RNOHLogger } from '@rnoh/react-native-openharmony/ts';
+import { RNOHContext } from '@rnoh/react-native-openharmony/ts';
+
 
 type DataItem = {buffer: ArrayBuffer, index: number};
 type Callback = () => void;
@@ -72,7 +73,7 @@ export class AudioPlayer {
     };
 
     const audioRendererInfo: audio.AudioRendererInfo = {
-      usage: audio.StreamUsage.STREAM_USAGE_VOICE_COMMUNICATION,
+      usage: audio.StreamUsage.STREAM_USAGE_MUSIC,
       rendererFlags: 0
     };
 
@@ -142,7 +143,7 @@ export class AudioPlayer {
     this.isWriting = false;
     if(!this.bufferQueue.length){
       this.stop();
-      callback();
+      callback && callback();
       return;
     }
   }
