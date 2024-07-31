@@ -121,12 +121,12 @@ export class TextToSpeechManager  {
   }
 
   /*获取当前初始化状态，若没有完成初始化则重新初始化*/
-  public getInitStatus(): Promise<string> {
+  public getInitStatus(): Promise<"success"> {
     return new Promise((resolve, reject) => {
       if(!this.ready){
         try {
           this.initEngine().then(() => {
-            resolve('Success');
+            resolve('success');
           }).catch(err => {
             reject(reject(JSON.stringify(err)));
           })
@@ -134,7 +134,7 @@ export class TextToSpeechManager  {
           reject(JSON.stringify(exception));
         }
       }else{
-        resolve('Success');
+        resolve('success');
       }
     })
   }
