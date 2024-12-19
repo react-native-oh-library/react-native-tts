@@ -1,0 +1,11 @@
+[
+    {
+        "Name": "react-native-tts",
+        "License": "MIT License",
+        "License File": "https://github.com/ak1394/react-native-tts/blob/master/README.md#license",
+        "Version Number": "4.1.1",
+        "Owner" : "xiafeng@huawei.com",
+        "Upstream URL": "https://github.com/ak1394/react-native-tts",
+        "Description": " Text-To-Speech for react-native"
+    }
+]
