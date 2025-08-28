@@ -1,4 +1,4 @@
-# @react-native-oh-tpl/react-native-tts
+# @react-native-ohos/react-native-tts
 
 This project is based on [react-native-tts](https://github.com/ak1394/react-native-tts)
 
