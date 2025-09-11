@@ -1,6 +1,6 @@
 {
-  "name": "@react-native-oh-tpl/react-native-tts",
-  "version": "4.1.1-0.0.3",
+  "name": "@react-native-ohos/react-native-tts",
+  "version": "4.1.1",
   "description": "React Native Text-To-Speech module for Android and iOS",
   "main": "index",
   "repository": {
@@ -17,15 +17,13 @@
     "harmony"
   ],
   "harmony": {
-    "alias": "react-native-tts",
-    "codegenConfig": {
-      "specPaths": [
-        "./src"
-      ]
-    }
+    "alias": "react-native-tts"
   },
   "dependencies": {
     "react-native-tts": "4.1.1"
+  },
+  "devDependencies": {
+    "react-native-harmony-cli": "npm:@react-native-oh/react-native-harmony-cli@^0.0.27"
   },
   "author": "Anton Krasovsky",
   "license": "MIT",
@@ -38,6 +36,7 @@
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "codegen-lib": "react-native codegen-lib-harmony --no-safety-check --npm-package-name react-native-tts --cpp-output-path ./harmony/rn_tts/src/main/cpp/generated --ets-output-path ./harmony/rn_tts/src/main/ets/generated --turbo-modules-spec-paths ./src/NativeTTS.ts"
   }
 }
