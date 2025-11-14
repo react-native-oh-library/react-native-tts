@@ -124,7 +124,7 @@ export class AudioPlayer {
 
     this.isWriting = false;
     if(!this.bufferQueue.length){
-      this.stop();
+      this.audioRenderer.flush();
       callback && callback();
       return;
     }
@@ -212,7 +212,9 @@ export class AudioPlayer {
         if(this.isPause && !this.isRunning){
           this.audioRenderer.start().then(() => {
             this.emitEvent('tts-resume');
-            this.processQueue(this.writeId);
+            this.processQueue(this.writeId, () => {
+              this.emitEvent('tts-finish');
+            });
             resolve(true);
           }).catch((e) => reject(JSON.stringify(e)));
         }

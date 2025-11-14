@@ -71,11 +71,11 @@ export class TextToSpeechManager  {
     return {
       // 开始播报回调
       onStart(requestId: string, response: textToSpeech.StartResponse) {
+        that.emitEvent('tts-start', requestId);
         that.processFlag = false;
       },
       // 合成完成及播报完成回调
       onComplete(requestId: string, response: textToSpeech.CompleteResponse){
-        that.emitEvent('tts-start', requestId);
         that.audioPlayer.sortBufferQueue();
         that.audioPlayer.processQueue(requestId, () => {
           that.emitEvent('tts-finish', requestId);
