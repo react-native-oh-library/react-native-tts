@@ -19,6 +19,7 @@ export class AudioPlayer {
   private bufferQueue: DataItem[] = [];
   private isWriting: boolean = false;
   public writeId: string = '';
+  private isFinish: boolean = true;  // 播放结束后状态依旧是STATE_RUNNING，需要另外判断是否结束
 
   constructor(ctx: RNOHContext) {
     this.context = ctx;
@@ -110,6 +111,7 @@ export class AudioPlayer {
       return;
     }
     this.isWriting = true;
+    this.isFinish = false;
 
     while (this.bufferQueue.length > 0) {
       // 暂停时，禁止写入
@@ -124,6 +126,7 @@ export class AudioPlayer {
 
     this.isWriting = false;
     if(!this.bufferQueue.length){
+      this.isFinish = true
       this.audioRenderer.flush();
       callback && callback();
       return;
@@ -157,18 +160,20 @@ export class AudioPlayer {
     }
   }
 
-  public start(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      try {
+  public async start(): Promise<boolean> {
+    try {
+      if (this.isRunning) {
+        await this.audioRenderer.stop(); // 上一次播放结束后状态依旧是STATE_RUNNING，需要改变状态才能进行下一次播放，否则start报6800301，状态不符合调用要求
+        if(!this.isFinish) {
+          this.emitEvent('tts-cancel');
+        }
         this.audioRenderer.flush();
-        this.audioRenderer.start().then(() => {
-          resolve(true);
-        }).catch((e) => reject(JSON.stringify(e)));
-      } catch (e) {
-        reject(JSON.stringify(e));
-        throw new Error(JSON.stringify(e));
       }
-    })
+      await this.audioRenderer.start();
+      return true;
+    } catch (e) {
+      throw new Error(JSON.stringify(e));
+    }
   }
 
   public stop(): Promise<boolean> {
