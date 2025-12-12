@@ -4,9 +4,10 @@
  * found in the LICENSE file.
  */
 import type { TurboModule, TurboModuleContext } from '@rnoh/react-native-openharmony/ts';
-import { RNPackage, TurboModulesFactory } from '@rnoh/react-native-openharmony/ts';
-import { TM } from '@rnoh/react-native-openharmony/generated/ts';
+import { TurboModulesFactory } from '@rnoh/react-native-openharmony/ts';
+import { TM } from './generated/ts';
 import { RNTTSTurboModule } from './RNTTSTurboModule';
+import { RNOHPackage } from '@rnoh/react-native-openharmony';
 
 class RNTTSTurboModuleFactory extends TurboModulesFactory {
   createTurboModule(name: string): TurboModule | null {
@@ -21,7 +22,7 @@ class RNTTSTurboModuleFactory extends TurboModulesFactory {
   }
 }
 
-export class RNTTSPackage extends RNPackage {
+export class RNTTSPackage extends RNOHPackage {
   createTurboModulesFactory(ctx: TurboModuleContext): TurboModulesFactory {
     return new RNTTSTurboModuleFactory(ctx);
   }

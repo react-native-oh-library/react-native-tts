@@ -1,5 +1,5 @@
 {
-  "name": "@react-native-oh-tpl/react-native-tts",
+  "name": "@react-native-ohos/react-native-tts",
   "version": "4.1.1-0.0.3",
   "description": "React Native Text-To-Speech module for Android and iOS",
   "main": "index",
@@ -18,10 +18,11 @@
   ],
   "harmony": {
     "alias": "react-native-tts",
-    "codegenConfig": {
-      "specPaths": [
-        "./src"
-      ]
+    "autolinking": {
+      "etsPackageClassName":"RNTTSPackage",
+      "cppPackageClassName":"RNTTSPackage",
+      "cmakeLibraryTargetName": "rnoh_tts", 
+      "ohPackageName": "@react-native-ohos/react-native-tts"
     }
   },
   "dependencies": {
@@ -38,6 +39,11 @@
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "codegen-lib": "react-native codegen-lib-harmony --no-safety-check --npm-package-name react-native-tts --cpp-output-path ./harmony/rn_tts/src/main/cpp/generated --ets-output-path ./harmony/rn_tts/src/main/ets/generated --turbo-modules-spec-paths ./src/NativeTTS.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

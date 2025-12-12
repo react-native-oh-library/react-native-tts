@@ -7,7 +7,7 @@
 import { textToSpeech } from '@kit.CoreSpeechKit';
 import { util } from '@kit.ArkTS';
 import { RNOHContext, RNOHLogger } from '@rnoh/react-native-openharmony/ts';
-import { TM } from '@rnoh/react-native-openharmony/generated/ts';
+import { TM } from './generated/ts';
 import {AudioPlayer} from './AudioPlayer';
 
 type EventCallback = (id: string) => void;
