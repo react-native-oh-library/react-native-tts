@@ -4,9 +4,9 @@ This project is based on [react-native-tts@4.1.1](https://github.com/ak1394/reac
 
 ## Documentation 
 
-- [中文](https://gitee.com/react-native-oh-library/usage-docs/blob/master/zh-cn/react-native-tts.md)
+- [中文](https://gitcode.com/OpenHarmony-RN/usage-docs/blob/master/zh-cn/react-native-tts.md)
 
-- [English](https://gitee.com/react-native-oh-library/usage-docs/blob/master/en/react-native-tts.md)
+- [English](https://gitcode.com/OpenHarmony-RN/usage-docs/blob/master/en/react-native-tts.md)
 
 ## License
 
