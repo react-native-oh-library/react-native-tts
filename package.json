@@ -17,7 +17,13 @@
     "harmony"
   ],
   "harmony": {
-    "alias": "react-native-tts"
+    "alias": "react-native-tts",
+    "autolinking": {
+      "etsPackageClassName":"RNTTSPackage",
+      "cppPackageClassName":"TtsPackage",
+      "cmakeLibraryTargetName": "rnoh_tts", 
+      "ohPackageName": "@react-native-ohos/react-native-tts"
+    }
   },
   "dependencies": {
     "react-native-tts": "4.1.1"
